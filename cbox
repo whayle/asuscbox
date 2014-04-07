@@ -252,6 +252,8 @@ $cr_install
 apt-get -y install linux-generic
 apt-get -y install grub-pc
 grub-mkconfig -o /boot/grub/grub.cfg
+echo "\nGRUB_TIMEOUT=10" >> /boot/grub/grub.cfg
+echo "\nTIMEOUT_QUIET=false" >> /boot/grub/grub.cfg
 grub-install ${target_disk} --force
 mykern=\`ls /boot/vmlinuz-* | grep -oP \"[0-9].*\" | sort -rV | head -1\`
 wget https://raw.githubusercontent.com/whayle/asuscbox/master/cboxkern
