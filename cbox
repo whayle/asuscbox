@@ -254,7 +254,7 @@ apt-get -y install grub-pc
 grub-mkconfig -o /boot/grub/grub.cfg
 grub-install ${target_disk} --force
 mykern=\`ls /boot/vmlinuz-* | grep -oP \"[0-9].*\" | sort -rV | head -1\`
-wget https://github.com/whayle/asuscbox/blob/master/cboxkern
+wget https://raw.githubusercontent.com/whayle/asuscbox/master/cboxkern
 bash cboxkern \$mykern
 rm cboxkern
 useradd -m user -s /bin/bash
