@@ -1,5 +1,6 @@
 # adapted from scripts written by Jay Lee: http://chromeos-cr48.blogspot.com/2013/10/chrubuntu-for-new-chromebooks-now-with.html
 
+
 # Create a temp directory for our work
 tempbuild=`mktemp -d`
 cd $tempbuild
