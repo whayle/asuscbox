@@ -180,6 +180,8 @@ then
   ubuntu_version=`wget --quiet -O - http://changelogs.ubuntu.com/meta-release-development | grep "^Version: " | tail -1 | sed -r 's/^Version: ([^ ]+)( LTS)?$/\1/'`
   ubuntu_animal=`wget --quiet -O - http://changelogs.ubuntu.com/meta-release-development | grep "^Dist: " | tail -1 | sed -r 's/^Dist: (.*)$/\1/'`
   tar_file="http://cdimage.ubuntu.com/ubuntu-core/daily/current/$ubuntu_animal-core-$ubuntu_arch.tar.gz"
+else
+  tar_file="http://cdimage.ubuntu.com/ubuntu-core/releases/$ubuntu_version/release/ubuntu-core-$ubuntu_version-core-$ubuntu_arch.tar.gz"
 fi
 
 echo_green "Installing Ubuntu ${ubuntu_version} with metapackage ${ubuntu_metapackage}\n"
@@ -252,11 +254,11 @@ $cr_install
 apt-get -y install linux-generic
 apt-get -y install grub-pc
 grub-mkconfig -o /boot/grub/grub.cfg
-echo "GRUB_TIMEOUT=10" >> /boot/grub/grub.cfg
-echo "TIMEOUT_QUIET=false" >> /boot/grub/grub.cfg
 grub-install ${target_disk} --force
 mykern=\`ls /boot/vmlinuz-* | grep -oP \"[0-9].*\" | sort -rV | head -1\`
+
 wget https://raw.githubusercontent.com/whayle/asuscbox/master/cboxkern
+
 bash cboxkern \$mykern
 rm cboxkern
 useradd -m user -s /bin/bash
@@ -272,12 +274,29 @@ chmod a+x /tmp/urfs/install-ubuntu.sh
 chroot /tmp/urfs /bin/bash -c /install-ubuntu.sh
 #rm /tmp/urfs/install-ubuntu.sh
 
+#echo -e "Section \"InputClass\"
+#    Identifier      \"touchpad peppy cyapa\"
+#    MatchIsTouchpad \"on\"
+#    MatchDevicePath \"/dev/input/event*\"
+#    MatchProduct    \"cyapa\"
+#    Option          \"FingerLow\" \"10\"
+#    Option          \"FingerHigh\" \"10\"
+#EndSection" > /tmp/urfs/usr/share/X11/xorg.conf.d/50-cros-touchpad.conf
+
+if echo `crossystem hwid` | grep -q "^PANTHER "; then
+  echo_green "Fixing SeaBIOS on ASUS Chromebox"
+  echo_green "Thanks to John Lewis"
+  echo_green "http://johnlewis.ie/asus-chromebox-owners-rejoice/"
+  wget http://johnlewis.ie/asus-chromebox-SeaBIOS-new.bin
+  flashrom -w -i RW_LEGACY:asus-chromebox-SeaBIOS-new.bin
+fi
+
 crossystem dev_boot_legacy=1 dev_boot_signed_only=1
 
 echo -e "
 
-Installation is complete! 
-The ChrUbuntu login is:
+Installation is complete! On reboot at the dev mode screen, you can press
+CTRL+L to boot ChrUbuntu or CTRL+D to boot Chrome OS. The ChrUbuntu login is:
 
 Username:  user
 Password:  user
